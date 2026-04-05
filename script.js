@@ -4,9 +4,6 @@
     const TOTAL_PIECES = GRID_SIZE * GRID_SIZE;   // 16
     const EMPTY_INDEX = TOTAL_PIECES - 1;   // последний кусочек (15) будет пустышкой (белый)
 
-    // путь к картинке из корня проекта
-    const IMAGE_PATH = "image.jpg";
-
     // Глобальные переменные
     let board = [];           // одномерный массив, хранит текущие индексы "кусочков" (0..15)
     let moveCount = 0;
