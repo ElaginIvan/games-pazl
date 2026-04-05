@@ -1,0 +1,746 @@
+* {
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0a0a0f;
+    background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(88, 40, 180, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(40, 100, 220, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(180, 40, 120, 0.08) 0%, transparent 50%);
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    margin: 0;
+    padding: 12px;
+    color: #e4e4e7;
+    overflow: hidden;
+    touch-action: manipulation;
+}
+
+/* основной контейнер игры */
+.game-container {
+    background: rgba(18, 18, 24, 0.85);
+    border-radius: 24px;
+    padding: 28px 32px 32px 32px;
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 25px 50px rgba(0, 0, 0, 0.6),
+        0 0 120px rgba(100, 60, 200, 0.08);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* панель управления */
+.puzzle-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding: 0 4px;
+    flex-wrap: wrap;
+}
+
+.info-panel {
+    background: rgba(255, 255, 255, 0.04);
+    padding: 8px 14px;
+    border-radius: 14px;
+    color: #a78bfa;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: 1px solid rgba(167, 139, 250, 0.15);
+    box-shadow: 0 0 20px rgba(167, 139, 250, 0.06);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.info-panel span {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-right: 6px;
+    color: #c4b5fd;
+    text-shadow: 0 0 12px rgba(167, 139, 250, 0.4);
+}
+
+.info-panel i {
+    margin-right: 6px;
+    color: #c4b5fd;
+    font-size: 1rem;
+}
+
+.info-time {
+    color: #60a5fa;
+    border-color: rgba(96, 165, 250, 0.15);
+    box-shadow: 0 0 20px rgba(96, 165, 250, 0.06);
+}
+
+.info-time i,
+.info-time span {
+    color: #93c5fd;
+}
+
+.info-time span {
+    font-weight: 800;
+    font-size: 1.2rem;
+    margin-right: 6px;
+}
+
+.record-panel {
+    color: #facc15;
+    border-color: rgba(250, 204, 21, 0.15);
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.06);
+}
+
+.record-panel i,
+.record-panel span {
+    color: #fde047;
+}
+
+.record-panel span {
+    font-weight: 800;
+    font-size: 1.2rem;
+    margin-right: 6px;
+    text-shadow: 0 0 12px rgba(250, 204, 21, 0.4);
+}
+
+.controls {
+    display: flex;
+    gap: 8px;
+}
+
+button {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 10px 14px;
+    min-height: 42px;
+    min-width: 42px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #d4d4d8;
+    letter-spacing: 0.01em;
+    touch-action: manipulation;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+    transform: translateY(0);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* контейнер сетки пазла */
+.puzzle-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    border-radius: 11px;
+    overflow: hidden;
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.5),
+        0 0 60px rgba(100, 60, 200, 0.05);
+    width: min(85vw, 85vh, 550px);
+    height: min(85vw, 85vh, 550px);
+    margin: 0 auto;
+    gap: 2px;
+    padding: 2px;
+    touch-action: none;
+}
+
+/* каждая ячейка-кусочек пазла */
+.puzzle-piece {
+    background-size: 400% 400%;
+    background-repeat: no-repeat;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    position: relative;
+}
+
+.puzzle-piece:hover {
+    transform: scale(1.02);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 0 15px rgba(167, 139, 250, 0.15);
+    z-index: 1;
+}
+
+.puzzle-piece:active {
+    transform: scale(0.97);
+    filter: brightness(0.9);
+}
+
+/* анимация победы */
+.win-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 5, 10, 0.9);
+    backdrop-filter: blur(12px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 20px;
+    padding-top: max(20px, env(safe-area-inset-top, 20px));
+    padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
+}
+
+.win-card {
+    background: linear-gradient(145deg, rgba(24, 24, 32, 0.95), rgba(12, 12, 18, 0.98));
+    border-radius: 24px;
+    padding: 32px 45px;
+    text-align: center;
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 30px 60px rgba(0, 0, 0, 0.7),
+        0 0 100px rgba(167, 139, 250, 0.1);
+    border: 1px solid rgba(167, 139, 250, 0.15);
+    transform: scale(0.9) translateY(20px);
+    transition: all 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+    max-width: 480px;
+    width: 90vw;
+    margin: 16px;
+}
+
+.win-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.win-overlay.show .win-card {
+    transform: scale(1) translateY(0);
+}
+
+.win-card h2 {
+    font-size: 2.2rem;
+    margin: 0 0 12px;
+    background: linear-gradient(135deg, #c4b5fd, #a78bfa, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 20px rgba(167, 139, 250, 0.3));
+    font-weight: 800;
+}
+
+.win-card > p {
+    font-size: 1.05rem;
+    margin-bottom: 16px;
+    color: #a1a1aa;
+}
+
+.win-card p strong {
+    color: #c4b5fd;
+    font-weight: 700;
+}
+
+.prize-title {
+    font-size: 1.15rem !important;
+    font-weight: 700;
+    color: #c4b5fd !important;
+    margin-bottom: 16px !important;
+    text-shadow: 0 0 15px rgba(167, 139, 250, 0.3);
+}
+
+.record-info {
+    font-size: 1.05rem;
+    color: #a1a1aa;
+    margin-bottom: 16px;
+    text-align: center;
+    line-height: 1.6;
+}
+
+.record-info strong {
+    color: #c4b5fd;
+    font-weight: 700;
+}
+
+.record-info i {
+    color: #facc15;
+    margin-right: 6px;
+}
+
+.record-info strong {
+    color: #c4b5fd;
+    font-weight: 700;
+}
+
+.prize-options {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.prize-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 2px solid rgba(167, 139, 250, 0.15);
+    border-radius: 16px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    text-align: center;
+}
+
+.prize-card:hover {
+    background: rgba(167, 139, 250, 0.12);
+    border-color: rgba(167, 139, 250, 0.4);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(167, 139, 250, 0.2);
+}
+
+.prize-card.selected {
+    background: rgba(167, 139, 250, 0.18);
+    border-color: #a78bfa;
+    box-shadow: 0 0 30px rgba(167, 139, 250, 0.3);
+    transform: scale(1.03);
+}
+
+.prize-img {
+    width: 100%;
+    height: 150px;
+    object-fit: contain;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    display: block;
+    padding: 10px;
+}
+
+.prize-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #d4d4d8;
+    margin: 0;
+}
+
+.win-card button {
+    font-size: 1rem;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.8), rgba(124, 58, 237, 0.9));
+    color: #ffffff;
+    padding: 12px 28px;
+    border: none;
+    box-shadow:
+        0 4px 15px rgba(139, 92, 246, 0.3),
+        0 0 30px rgba(139, 92, 246, 0.15);
+    font-weight: 600;
+    width: 100%;
+}
+
+.win-card button:hover {
+    background: linear-gradient(135deg, rgba(149, 102, 255, 0.9), rgba(134, 68, 247, 1));
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 20px rgba(139, 92, 246, 0.4),
+        0 0 40px rgba(139, 92, 246, 0.2);
+}
+
+.win-card button#playAgainBtn {
+    margin-top: 10px;
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.8), rgba(22, 163, 74, 0.9));
+    display: none;
+}
+
+.win-card button#playAgainBtn:hover {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(22, 163, 74, 1));
+    box-shadow:
+        0 6px 20px rgba(34, 197, 94, 0.4),
+        0 0 40px rgba(34, 197, 94, 0.2);
+}
+
+/* уведомление о копировании */
+.copy-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    width: max-content;
+    transform: translateX(-50%) translateY(-20px);
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(22, 163, 74, 0.95));
+    color: white;
+    padding: 10px 10px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.copy-notification.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.copy-notification i {
+    margin-right: 8px;
+}
+
+/* подсказка для мобильных */
+.hint {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.85rem;
+    color: #71717a;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 14px;
+    padding: 10px 16px;
+    display: inline-block;
+    width: auto;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.hint i {
+    color: #a78bfa;
+    margin: 0 4px;
+}
+
+/* модальное окно справки */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 5, 10, 0.9);
+    backdrop-filter: blur(12px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 20px;
+    padding-top: max(20px, env(safe-area-inset-top, 20px));
+    padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-card {
+    background: linear-gradient(145deg, rgba(24, 24, 32, 0.95), rgba(12, 12, 18, 0.98));
+    border-radius: 20px;
+    padding: 0;
+    max-width: 500px;
+    width: 100%;
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 30px 60px rgba(0, 0, 0, 0.7),
+        0 0 100px rgba(167, 139, 250, 0.1);
+    border: 1px solid rgba(167, 139, 250, 0.15);
+    transform: scale(0.9) translateY(20px);
+    transition: all 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+    overflow: hidden;
+}
+
+.modal-overlay.show .modal-card {
+    transform: scale(1) translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 28px 16px 28px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.modal-header h2 {
+    font-size: 1.5rem;
+    margin: 0;
+    background: linear-gradient(135deg, #c4b5fd, #a78bfa, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 20px rgba(167, 139, 250, 0.3));
+    font-weight: 700;
+}
+
+.modal-header h2 i {
+    margin-right: 10px;
+    -webkit-text-fill-color: #a78bfa;
+    filter: none;
+}
+
+.modal-header button {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 10px;
+    min-height: 36px;
+    min-width: 36px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+}
+
+.modal-header button:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.modal-content {
+    padding: 20px 28px 28px 28px;
+    color: #a1a1aa;
+    line-height: 1.7;
+}
+
+.modal-content p {
+    margin: 0 0 14px 0;
+}
+
+.modal-content p:last-child {
+    margin-bottom: 0;
+}
+
+.modal-content ul {
+    margin: 10px 0 16px 20px;
+    padding: 0;
+}
+
+.modal-content li {
+    margin-bottom: 8px;
+}
+
+.win-card h2 i {
+    margin: 0 8px;
+    filter: drop-shadow(0 0 15px rgba(250, 204, 59, 0.4));
+}
+
+.win-card button i {
+    margin-right: 8px;
+}
+
+.footer {
+    display: flex;
+    justify-content: center;
+}
+
+@media (max-width: 550px) {
+    body {
+        padding: 8px;
+        align-items: flex-start;
+        padding-top: 16px;
+    }
+
+    /* скрываем текстовые метки, оставляем иконки и значения */
+    .label-text {
+        display: none;
+    }
+
+    .game-container {
+        padding: 16px 16px 20px 16px;
+        border-radius: 18px;
+    }
+
+    .puzzle-header {
+        gap: 8px;
+        margin-bottom: 16px;
+        flex-wrap: nowrap;
+        justify-content: center;
+    }
+
+    .info-panel {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+
+    .info-panel span {
+        font-size: 1rem;
+    }
+
+    .info-time span {
+        font-size: 1rem;
+    }
+
+    .record-panel span {
+        font-size: 1rem;
+    }
+
+    .controls {
+        justify-content: flex-end;
+        gap: 6px;
+    }
+
+    button {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+        min-height: 36px;
+        min-width: 36px;
+    }
+
+    .puzzle-grid {
+        width: min(90vw, 75vh);
+        height: min(90vw, 75vh);
+        gap: 1.5px;
+        padding: 1.5px;
+    }
+
+    .hint {
+        font-size: 0.8rem;
+        padding: 8px 12px;
+        margin-top: 16px;
+    }
+}
+
+@media (max-width: 550px) {
+    .win-card {
+        padding: 20px 18px;
+        margin: 8px;
+        max-height: calc(100vh - 40px);
+        max-height: calc(100dvh - 40px);
+        overflow-y: auto;
+        padding-top: max(20px, env(safe-area-inset-top, 20px));
+        padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .win-card h2 {
+        font-size: 1.7rem;
+    }
+
+    .win-card p {
+        font-size: 0.9rem;
+    }
+
+    .prize-title {
+        font-size: 1rem !important;
+        margin-bottom: 12px !important;
+    }
+
+    .prize-options {
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+
+    .prize-card {
+        padding: 12px 14px;
+    }
+
+    .prize-img {
+        height: 120px;
+    }
+
+    .win-card button {
+        width: 100%;
+        padding: 14px 24px;
+    }
+}
+
+@media (max-width: 380px) {
+    .game-container {
+        padding: 12px 12px 16px 12px;
+    }
+
+    .puzzle-header {
+        gap: 6px;
+    }
+
+    .info-panel {
+        font-size: 0.7rem;
+        padding: 5px 8px;
+    }
+
+    .info-panel span {
+        font-size: 0.9rem;
+    }
+
+    .info-time span {
+        font-size: 0.9rem;
+    }
+
+    .controls {
+        gap: 5px;
+    }
+
+    button {
+        padding: 7px 8px;
+        font-size: 0.75rem;
+        min-height: 34px;
+        min-width: 34px;
+    }
+
+    .puzzle-grid {
+        width: min(92vw, 70vh);
+        height: min(92vw, 70vh);
+    }
+}
+
+@media (max-height: 700px) and (orientation: landscape) {
+    body {
+        padding: 8px 16px;
+        align-items: flex-start;
+        padding-top: 12px;
+    }
+
+    .game-container {
+        padding: 16px 24px 20px 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .puzzle-header {
+        margin-bottom: 12px;
+        gap: 8px;
+    }
+
+    .info-panel {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+
+    .controls {
+        gap: 6px;
+    }
+
+    button {
+        padding: 7px 8px;
+        min-height: 34px;
+        min-width: 34px;
+    }
+
+    .puzzle-grid {
+        width: min(60vh, 400px);
+        height: min(60vh, 400px);
+    }
+
+    .hint {
+        margin-top: 12px;
+        font-size: 0.75rem;
+    }
+}
