@@ -1,0 +1,32 @@
+/* ===== Эффекты для плиток — яркие, с переливающимися бликами ===== */
+
+.puzzle-piece {
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.4),
+        0 2px 6px rgba(255, 255, 255, 0.15) inset,
+        0 -3px 8px rgba(255, 255, 255, 0.1) inset,
+        0 0 30px rgba(167, 139, 250, 0.15);
+    backdrop-filter: blur(6px);
+}
+
+/* стеклянный переливающийся блик */
+.puzzle-piece::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.25) 0%,
+        rgba(255, 220, 240, 0.18) 25%,
+        rgba(200, 230, 255, 0.15) 50%,
+        rgba(255, 255, 200, 0.18) 75%,
+        rgba(220, 200, 255, 0.15) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+    border-radius: 7px;
+}

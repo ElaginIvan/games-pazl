@@ -4,9 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Пазл | Игра из картинки</title>
+    <title>Пятнашки</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <!-- визуальные эффекты (плитки + звёздный фон) -->
+    <link rel="stylesheet" href="visual-effects.css">
 </head>
 
 <body>
@@ -37,14 +39,14 @@
                 <button id="closeHelpBtn"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-content">
-                <p><strong>Валерия, цель игры:</strong> собрать пазл, разместив все плитки в правильном порядке.</p>
+                <p><strong>Валерия, цель игры:</strong> собрать головоломку, разместив все плитки в правильном порядке.</p>
                 <p><strong>Как играть:</strong></p>
                 <ul>
                     <li>Нажимай на плитку, которая находится рядом с пустым местом</li>
                     <li>Плитка и пустое место поменяются местами</li>
                     <li>Продолжай, пока не соберёшь полную числовую картинку</li>
                 </ul>
-                <p><strong>Совет:</strong> планируйте ходы заранее и собирайте пазл за минимальное количество шагов!</p>
+                <p><strong>Совет:</strong> планируй ходы заранее и собири головоломку за минимальное количество шагов!</p>
             </div>
         </div>
     </div>
@@ -53,7 +55,7 @@
     <div id="winOverlay" class="win-overlay">
         <div class="win-card">
             <h2><i class="fa-solid fa-trophy"></i> ПОБЕДА! <i class="fa-solid fa-trophy"></i></h2>
-            <p>Ты собрала пазл за <strong id="finalMoves">0</strong> ходов и <strong id="finalTime">00:00</strong>!</p>
+            <p>Ты собрала головоломку за <strong id="finalMoves">0</strong> ходов и <strong id="finalTime">00:00</strong>!</p>
             <p class="prize-title">Выбери свой приз!</p>
             <div class="prize-options">
                 <div class="prize-card" id="prizeChocolate">
@@ -71,6 +73,8 @@
     </div>
 
     <script src="script.js"></script>
+    <!-- визуальные эффекты (звёзды, планеты, падающие звёзды) -->
+    <script src="visual-effects.js"></script>
 </body>
 
 </html>

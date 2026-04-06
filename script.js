@@ -206,6 +206,50 @@
         }
     }
 
+    // плавное перемещение двух плиток (clickedPos <-> emptyPos) без полной перерисовки
+    function animateSwap(clickedPos, emptyPos, callback) {
+        const pieces = gridContainer.querySelectorAll('.puzzle-piece');
+        const clickedPiece = pieces[clickedPos];
+        const emptyPiece = pieces[emptyPos];
+        if (!clickedPiece || !emptyPiece) {
+            renderBoard();
+            callback();
+            return;
+        }
+
+        const clickedRect = clickedPiece.getBoundingClientRect();
+        const emptyRect = emptyPiece.getBoundingClientRect();
+
+        const dx = emptyRect.left - clickedRect.left;
+        const dy = emptyRect.top - clickedRect.top;
+
+        // задаём начальные позиции через relative offset
+        clickedPiece.style.position = 'relative';
+        clickedPiece.style.transition = 'none';
+        clickedPiece.style.left = '0px';
+        clickedPiece.style.top = '0px';
+        emptyPiece.style.transition = 'none';
+
+        // принудительный reflow
+        clickedPiece.offsetHeight;
+
+        // анимируем
+        clickedPiece.style.transition = 'left 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94), top 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        clickedPiece.style.left = dx + 'px';
+        clickedPiece.style.top = dy + 'px';
+        clickedPiece.style.zIndex = '10';
+        emptyPiece.style.opacity = '0.25';
+        emptyPiece.style.transform = 'scale(0.85)';
+
+        setTimeout(function() {
+            // меняем данные в массиве
+            [board[clickedPos], board[emptyPos]] = [board[emptyPos], board[clickedPos]];
+            // мгновенно перерисовываем — теперь элементы уже на своих местах
+            renderBoard();
+            callback();
+        }, 130);
+    }
+
     // проверка победы: каждый элемент board[i] должен быть равен i (кусок на своём месте)
     function checkWin() {
         if (gameWin) return true;
@@ -294,9 +338,9 @@
                 break;
             }
         }
-        if (emptyPos === -1) return false; // ошибка, но по логике всегда есть
+        if (emptyPos === -1) return false;
 
-        // проверяем, являются ли clickedPos и emptyPos соседями (по вертикали или горизонтали)
+        // проверяем, являются ли clickedPos и emptyPos соседями
         const clickedRow = Math.floor(clickedPos / GRID_SIZE);
         const clickedCol = clickedPos % GRID_SIZE;
         const emptyRow = Math.floor(emptyPos / GRID_SIZE);
@@ -305,12 +349,12 @@
         const isAdjacent = (Math.abs(clickedRow - emptyRow) + Math.abs(clickedCol - emptyCol)) === 1;
         if (!isAdjacent) return false;
 
-        // меняем местами
-        [board[clickedPos], board[emptyPos]] = [board[emptyPos], board[clickedPos]];
-        moveCount++;
-        moveCounterSpan.innerText = moveCount;
-        renderBoard();
-        checkWin();
+        // анимируем перемещение
+        animateSwap(clickedPos, emptyPos, function() {
+            moveCount++;
+            moveCounterSpan.innerText = moveCount;
+            checkWin();
+        });
         return true;
     }
 
