@@ -525,6 +525,71 @@ button:active {
     margin-bottom: 8px;
 }
 
+/* таблица рекордов */
+.records-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.no-records {
+    text-align: center;
+    color: #71717a;
+    font-size: 0.95rem;
+    margin: 20px 0;
+}
+
+.records-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.records-table thead th {
+    color: #a78bfa;
+    font-weight: 600;
+    padding: 8px 6px;
+    text-align: center;
+    border-bottom: 1px solid rgba(167, 139, 250, 0.2);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.records-table tbody td {
+    padding: 10px 6px;
+    text-align: center;
+    color: #d4d4d8;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.records-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.records-table .record-time {
+    color: #60a5fa;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.records-table .record-date {
+    color: #71717a;
+    font-size: 0.8rem;
+}
+
+.best-record {
+    background: rgba(250, 204, 21, 0.06);
+}
+
+.best-record td {
+    color: #fde047 !important;
+}
+
+.best-record td:first-child::before {
+    content: "👑 ";
+}
+
 .win-card h2 i {
     margin: 0 8px;
     filter: drop-shadow(0 0 15px rgba(250, 204, 59, 0.4));
@@ -557,7 +622,7 @@ button:active {
     }
 
     .puzzle-header {
-        gap: 8px;
+        gap: 3px;
         margin-bottom: 16px;
         flex-wrap: nowrap;
         justify-content: center;
@@ -582,7 +647,7 @@ button:active {
 
     .controls {
         justify-content: flex-end;
-        gap: 6px;
+        gap: 3px;
     }
 
     button {
@@ -656,7 +721,7 @@ button:active {
     }
 
     .puzzle-header {
-        gap: 6px;
+        gap: 3px;
     }
 
     .info-panel {
@@ -673,7 +738,7 @@ button:active {
     }
 
     .controls {
-        gap: 5px;
+        gap: 3px;
     }
 
     button {
@@ -714,7 +779,7 @@ button:active {
     }
 
     .controls {
-        gap: 6px;
+        gap: 8px;
     }
 
     button {

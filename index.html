@@ -23,6 +23,7 @@
             </div>
             <div class="controls">
                 <button id="shuffleBtn"><i class="fa-solid fa-rotate-right"></i></button>
+                <button id="recordsBtn"><i class="fa-solid fa-trophy"></i></button>
                 <button id="helpBtn"><i class="fa-solid fa-circle-question"></i></button>
             </div>
         </div>
@@ -47,6 +48,19 @@
                     <li>Продолжай, пока не соберёшь полную числовую картинку</li>
                 </ul>
                 <p><strong>Совет:</strong> планируй ходы заранее и собири головоломку за минимальное количество шагов!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- модальное окно рекордов -->
+    <div id="recordsOverlay" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-trophy"></i> Рекорды</h2>
+                <button id="closeRecordsBtn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-content">
+                <div id="recordsList" class="records-list"></div>
             </div>
         </div>
     </div>

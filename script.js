@@ -68,6 +68,9 @@
     const moveCounterSpan = document.getElementById("moveCounter");
     const gameTimerSpan = document.getElementById("gameTimer");
     const shuffleBtn = document.getElementById("shuffleBtn");
+    const recordsBtn = document.getElementById("recordsBtn");
+    const recordsOverlay = document.getElementById("recordsOverlay");
+    const closeRecordsBtn = document.getElementById("closeRecordsBtn");
     const helpBtn = document.getElementById("helpBtn");
     const helpOverlay = document.getElementById("helpOverlay");
     const closeHelpBtn = document.getElementById("closeHelpBtn");
@@ -97,6 +100,31 @@
             const best = getBestRecord();
             bestEl.innerText = best ? formatTime(best) : "--:--";
         }
+    }
+
+    function renderRecordsModal() {
+        const container = document.getElementById("recordsList");
+        if (!container) return;
+        const records = getRecords();
+        if (records.length === 0) {
+            container.innerHTML = '<p class="no-records">Пока нет завершённых игр. Собери головоломку первый раз!</p>';
+            return;
+        }
+        let html = '<table class="records-table"><thead><tr><th>#</th><th>Время</th><th>Ходы</th><th>Дата</th></tr></thead><tbody>';
+        records.forEach((r, i) => {
+            const date = new Date(r.date);
+            const dateStr = date.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit", year: "2-digit" });
+            const timeStr = formatTime(r.time);
+            const isBest = i === 0;
+            html += `<tr class="${isBest ? 'best-record' : ''}">
+                <td>${i + 1}</td>
+                <td class="record-time">${timeStr}</td>
+                <td>${r.moves}</td>
+                <td class="record-date">${dateStr}</td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
     }
 
     // создаём элемент уведомления
@@ -567,6 +595,21 @@
         addButtonListener(closeHelpBtn, () => {
             helpOverlay.classList.remove("show");
         });
+
+        // окно рекордов
+        addButtonListener(recordsBtn, () => {
+            renderRecordsModal();
+            recordsOverlay.classList.add("show");
+        });
+        addButtonListener(closeRecordsBtn, () => {
+            recordsOverlay.classList.remove("show");
+        });
+        recordsOverlay.addEventListener("click", (e) => {
+            if (e.target === recordsOverlay) {
+                recordsOverlay.classList.remove("show");
+            }
+        });
+
         // закрытие по клику на оверлей
         helpOverlay.addEventListener("click", (e) => {
             if (e.target === helpOverlay) {
@@ -577,6 +620,7 @@
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape") {
                 helpOverlay.classList.remove("show");
+                recordsOverlay.classList.remove("show");
             }
         });
 
