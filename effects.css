@@ -30,3 +30,16 @@
     z-index: 1;
     border-radius: 7px;
 }
+
+/* пустая ячейка — без эффектов */
+.empty-cell::before,
+.empty-cell::after {
+    display: none !important;
+}
+
+.empty-cell {
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    background-color: transparent !important;
+}

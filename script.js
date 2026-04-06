@@ -165,11 +165,11 @@
     }
 
     // Генерирует стиль для ячейки: фоновая картинка и позиция в зависимости от того, какой кусочек (логический номер) должен быть отображен.
-    // Если logicalPieceId === EMPTY_INDEX (15) -> пустая заглушка (белый фон с текстурой)
+    // Если logicalPieceId === EMPTY_INDEX (15) -> пустая заглушка (прозрачная)
     function getPieceStyle(logicalPieceId) {
         if (logicalPieceId === EMPTY_INDEX) {
-            // пустая ячейка — можно сделать приятный светло-серый фон, имитация пустого места
-            return `background-image: none; background-color: #1a1a24; background-size: cover; box-shadow: inset 0 0 0 2px rgba(167, 139, 250, 0.15);`;
+            // пустая ячейка — полностью прозрачная, без фона и теней
+            return `background-image: none; background-color: transparent; box-shadow: none; border: none; pointer-events: none;`;
         } else {
             // нормальный кусочек картинки
             // background-image берется из глобального стиля, зададим динамически через url
@@ -189,19 +189,22 @@
         for (let i = 0; i < TOTAL_PIECES; i++) {
             const pieceLogicalId = board[i];    // логический ID кусочка (0..15) который лежит в позиции i
             const pieceDiv = document.createElement("div");
-            pieceDiv.className = "puzzle-piece";
+            const isEmpty = pieceLogicalId === EMPTY_INDEX;
+            pieceDiv.className = isEmpty ? "puzzle-piece empty-cell" : "puzzle-piece";
             // применяем стиль в зависимости от того, что это за кусочек
             pieceDiv.style.cssText = getPieceStyle(pieceLogicalId);
             // добавляем data-index для обработки клика (текущая позиция)
             pieceDiv.setAttribute("data-pos", i);
-            // поддержка и click, и touch событий для мобильных
-            pieceDiv.addEventListener("click", (function (pos) {
-                return function () { onPieceClick(pos); };
-            })(i));
-            pieceDiv.addEventListener("touchend", function(e) {
-                e.preventDefault();
-                onPieceClick(i);
-            });
+            // пустая ячейка не кликабельна
+            if (!isEmpty) {
+                pieceDiv.addEventListener("click", (function (pos) {
+                    return function () { onPieceClick(pos); };
+                })(i));
+                pieceDiv.addEventListener("touchend", function(e) {
+                    e.preventDefault();
+                    onPieceClick(i);
+                });
+            }
             gridContainer.appendChild(pieceDiv);
         }
     }
@@ -211,24 +214,28 @@
         const pieces = gridContainer.querySelectorAll('.puzzle-piece');
         const clickedPiece = pieces[clickedPos];
         const emptyPiece = pieces[emptyPos];
-        if (!clickedPiece || !emptyPiece) {
+        if (!clickedPiece) {
             renderBoard();
             callback();
             return;
         }
 
         const clickedRect = clickedPiece.getBoundingClientRect();
-        const emptyRect = emptyPiece.getBoundingClientRect();
+        const emptyRect = emptyPiece ? emptyPiece.getBoundingClientRect() : null;
+        if (!emptyRect) {
+            renderBoard();
+            callback();
+            return;
+        }
 
         const dx = emptyRect.left - clickedRect.left;
         const dy = emptyRect.top - clickedRect.top;
 
-        // задаём начальные позиции через relative offset
+        // задаём начальные позиции
         clickedPiece.style.position = 'relative';
         clickedPiece.style.transition = 'none';
         clickedPiece.style.left = '0px';
         clickedPiece.style.top = '0px';
-        emptyPiece.style.transition = 'none';
 
         // принудительный reflow
         clickedPiece.offsetHeight;
@@ -238,8 +245,6 @@
         clickedPiece.style.left = dx + 'px';
         clickedPiece.style.top = dy + 'px';
         clickedPiece.style.zIndex = '10';
-        emptyPiece.style.opacity = '0.25';
-        emptyPiece.style.transform = 'scale(0.85)';
 
         setTimeout(function() {
             // меняем данные в массиве
@@ -500,7 +505,7 @@
         // принудительно переопределим getPieceStyle в глобальном доступе
         window.getPieceStyle = function (logicalPieceId) {
             if (logicalPieceId === EMPTY_INDEX) {
-                return `background-color: #1a1a24; background-image: none; box-shadow: inset 0 0 0 2px rgba(167, 139, 250, 0.15); display: flex; align-items: center; justify-content: center;`;
+                return `background-color: transparent; background-image: none; box-shadow: none; border: none; pointer-events: none; display: flex; align-items: center; justify-content: center;`;
             } else {
                 const hue = (logicalPieceId * 23) % 360;
                 return `background-color: hsl(${hue}, 60%, 45%); background-image: none; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: bold; color: #e4e4e7; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);`;
@@ -512,23 +517,23 @@
             gridContainer.innerHTML = "";
             for (let i = 0; i < TOTAL_PIECES; i++) {
                 const pieceLogicalId = board[i];
+                const isEmpty = pieceLogicalId === EMPTY_INDEX;
                 const pieceDiv = document.createElement("div");
-                pieceDiv.className = "puzzle-piece";
+                pieceDiv.className = isEmpty ? "puzzle-piece empty-cell" : "puzzle-piece";
                 pieceDiv.style.cssText = window.getPieceStyle(pieceLogicalId);
-                if (pieceLogicalId !== EMPTY_INDEX) {
+                if (!isEmpty) {
                     pieceDiv.innerText = (pieceLogicalId + 1).toString();
+                    pieceDiv.addEventListener("click", (function (pos) {
+                        return function () { onPieceClick(pos); };
+                    })(i));
+                    pieceDiv.addEventListener("touchend", function(e) {
+                        e.preventDefault();
+                        onPieceClick(i);
+                    });
                 } else {
                     pieceDiv.innerText = "";
                 }
                 pieceDiv.setAttribute("data-pos", i);
-                // поддержка и click, и touch событий для мобильных
-                pieceDiv.addEventListener("click", (function (pos) {
-                    return function () { onPieceClick(pos); };
-                })(i));
-                pieceDiv.addEventListener("touchend", function(e) {
-                    e.preventDefault();
-                    onPieceClick(i);
-                });
                 gridContainer.appendChild(pieceDiv);
             }
         };
